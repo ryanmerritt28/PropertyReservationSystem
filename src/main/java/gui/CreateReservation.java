@@ -25,7 +25,7 @@ public class CreateReservation extends javax.swing.JFrame {
     private List<Reservation> reservations = new ArrayList<>();
     //int propertyIndex = 0;
     private List<Property> displayedProps = new ArrayList<>();
-    private List<Property> propsWithAmenities = new ArrayList<>();
+    private List<Property> filteredProps = new ArrayList<>();
     
     public CreateReservation() {
         initComponents();
@@ -376,7 +376,7 @@ public class CreateReservation extends javax.swing.JFrame {
             String error = "Please enter the date in YYYY-MM-DD format.";
             JOptionPane.showMessageDialog(this, error, "Date Format Error", JOptionPane.ERROR_MESSAGE);
         }
-
+        
         if (dateFormatValid) {    //Assigning checkIn and checkOut if date format was determined to be valid
             LocalDate checkIn = LocalDate.parse(tbxCheckIn.getText());
             LocalDate checkOut = LocalDate.parse(tbxCheckOut.getText());
@@ -385,37 +385,34 @@ public class CreateReservation extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, warn, "Date Error", JOptionPane.ERROR_MESSAGE);
             }
             else if (checkIn.isBefore(checkOut)) {
-
-                for (Property p : properties) {
-                    if (cbxPool.isSelected() 
-                            && p.getAmenities().contains("Pool")) {
-                        propsWithAmenities.add(p);
-                    }
-                    if (cbxSpa.isSelected() 
-                            && p.getAmenities().contains("Spa")) {
-                        propsWithAmenities.add(p);
-                    }
-                    if (cbxHighFloor.isSelected() 
-                            && p.getAmenities().contains("High Floor")) {
-                        propsWithAmenities.add(p);
-                    }
-                    if (cbxPets.isSelected() 
-                            && p.getAmenities().contains("Pets Allowed")) {
-                        propsWithAmenities.add(p);
-                    }
+                int count = 0;
+                if (cbxPool.isSelected() || cbxSpa.isSelected() || cbxHighFloor.isSelected() || cbxPets.isSelected()) {
+                    count ++;
                 }
-                
-                for (Property prop : propsWithAmenities) {
-                    if (prop.checkAvailability(checkIn, checkOut) 
-                            && prop.getCity().equals(tbxCity.getText())) {
-                        lm.addElement(prop.toString());
-                        displayedProps.add(prop);   //keeps track of all properties displayed
-                    }
-                }   
+                for (Property p : properties) {
+                    if (p.checkAvailability(checkIn, checkOut) 
+                            && p.getCity().equals(tbxCity.getText())) {
+                        if ( count >= 1 && ((cbxPool.isSelected() && p.getAmenities().contains("Pool")) 
+                                ||(cbxSpa.isSelected() && p.getAmenities().contains("Spa"))
+                                    ||(cbxHighFloor.isSelected() && p.getAmenities().contains("High Floor"))
+                                        ||(cbxPets.isSelected() && p.getAmenities().contains("Pets Allowed")))) {
+                           lm.addElement(p.toString());
+                           displayedProps.add(p); 
+                        }
+                        else if (count == 0) {
+                            lm.addElement(p.toString());
+                            displayedProps.add(p);
+                        }
+                   }
+               } 
                 listProperties.setModel(lm);
             }
         }       
-
+ 
+        if (displayedProps.isEmpty()) {
+            String empty = "No available properties found.";
+            JOptionPane.showMessageDialog(this, empty, "No Properties Found", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnSearchPropertiesActionPerformed
 
     private void btnReserveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReserveActionPerformed
