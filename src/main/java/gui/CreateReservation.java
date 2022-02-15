@@ -25,6 +25,7 @@ public class CreateReservation extends javax.swing.JFrame {
     private List<Reservation> reservations = new ArrayList<>();
     //int propertyIndex = 0;
     private List<Property> displayedProps = new ArrayList<>();
+    private List<Property> propsWithAmenities = new ArrayList<>();
     
     public CreateReservation() {
         initComponents();
@@ -345,6 +346,10 @@ public class CreateReservation extends javax.swing.JFrame {
                     tbxPhoneNumber.setEditable(false);
                     btnSearchProperties.setEnabled(true);
                     btnReserve.setEnabled(true);
+                    
+                    tbxCheckIn.setEditable(true);
+                    tbxCheckIn.setEditable(true);
+                    tbxCity.setEditable(true);
                 }
                 
                 found = true;
@@ -380,15 +385,37 @@ public class CreateReservation extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, warn, "Date Error", JOptionPane.ERROR_MESSAGE);
             }
             else if (checkIn.isBefore(checkOut)) {
-                for (Property prop : properties) {
-                    if (prop.checkAvailability(checkIn, checkOut) && prop.getCity().equals(tbxCity.getText())) {
+
+                for (Property p : properties) {
+                    if (cbxPool.isSelected() 
+                            && p.getAmenities().contains("Pool")) {
+                        propsWithAmenities.add(p);
+                    }
+                    if (cbxSpa.isSelected() 
+                            && p.getAmenities().contains("Spa")) {
+                        propsWithAmenities.add(p);
+                    }
+                    if (cbxHighFloor.isSelected() 
+                            && p.getAmenities().contains("High Floor")) {
+                        propsWithAmenities.add(p);
+                    }
+                    if (cbxPets.isSelected() 
+                            && p.getAmenities().contains("Pets Allowed")) {
+                        propsWithAmenities.add(p);
+                    }
+                }
+                
+                for (Property prop : propsWithAmenities) {
+                    if (prop.checkAvailability(checkIn, checkOut) 
+                            && prop.getCity().equals(tbxCity.getText())) {
                         lm.addElement(prop.toString());
                         displayedProps.add(prop);   //keeps track of all properties displayed
                     }
                 }   
                 listProperties.setModel(lm);
             }
-        }
+        }       
+
     }//GEN-LAST:event_btnSearchPropertiesActionPerformed
 
     private void btnReserveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReserveActionPerformed
@@ -440,6 +467,11 @@ public class CreateReservation extends javax.swing.JFrame {
         tbxPhoneNumber.setEditable(false);
         btnSearchProperties.setEnabled(false);
         btnReserve.setEnabled(false);
+        tbxCheckIn.setEditable(false);
+        tbxCheckIn.setEditable(false);
+        tbxCity.setEditable(false);
+        
+        
         
     }//GEN-LAST:event_formWindowOpened
 

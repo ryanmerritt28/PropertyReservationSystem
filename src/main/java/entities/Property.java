@@ -171,21 +171,4 @@ public class Property {//implements Serializable, IPersistable {
 //    @Override
 //    public void writeToFile(){}
 //    
-//    @Override
-//    public int Persist() {
-//        PrintWriter fout = null;
-//        String fileName = String.format("%s%s", IPersistable.path, "Properties.csv");
-//        try {
-//            fout = new PrintWriter(new FileOutputStream(fileName, true));
-//        }
-//        catch (FileNotFoundException fnfe) {
-//            fnfe.printStackTrace();
-//        }
-//        finally {
-//            if (fout != null) {
-//                fout.close();
-//            }
-//        }
-//        return 1;
-//    }
 }
