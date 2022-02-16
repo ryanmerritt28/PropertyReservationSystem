@@ -10,6 +10,9 @@ import entities.Reservation;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import entities.CustomerNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class CreateReservation extends javax.swing.JFrame {
@@ -19,7 +22,7 @@ public class CreateReservation extends javax.swing.JFrame {
     private Customer c1;
     private List<Customer> customers = new ArrayList<>();
     private Customer custTracker;
-    private List<Property> properties = new ArrayList<>();
+    private List<Property> properties = Property.getProperties();
     private Property propTracker;
     private Reservation resTracker;
     private List<Reservation> reservations = new ArrayList<>();
@@ -325,13 +328,11 @@ public class CreateReservation extends javax.swing.JFrame {
         
         
         String idSearch = tbxCustomerID.getText();
-        boolean found = false;
         
-        //Iterates through all customers, searching based off of customerID
-        for (Customer cust : customers) {
-            if (idSearch.equals(cust.getCustomerID())) {        //Customer found
-                custTracker = cust; //Tracking customer
-                
+        
+        try {
+            //Iterates through all customers, searching based off of customerID
+            custTracker = Customer.getCustomer(idSearch);
                 String msg = "The customer is " + custTracker.getFname() + " " + custTracker.getLname() + "?";
                 int confirm = JOptionPane.showConfirmDialog(this, msg, "Confirm", JOptionPane.YES_NO_OPTION);
                 
@@ -352,14 +353,15 @@ public class CreateReservation extends javax.swing.JFrame {
                     tbxCity.setEditable(true);
                 }
                 
-                found = true;
+                
             }
-        }
-
-        if (!found) {    //Customer not found
+ 
+        catch (CustomerNotFoundException ex) {
             String error = "Customer not found. Please enter a valid CustomerID.";
             JOptionPane.showMessageDialog(this, error, "Customer not found", JOptionPane.ERROR_MESSAGE);
         }
+
+        
     }//GEN-LAST:event_btnSearchCustomerActionPerformed
 
     private void btnSearchPropertiesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchPropertiesActionPerformed
@@ -394,7 +396,7 @@ public class CreateReservation extends javax.swing.JFrame {
                             && p.getCity().equals(tbxCity.getText())) {
                         if ( count >= 1 && ((cbxPool.isSelected() && p.getAmenities().contains("Pool")) 
                                 ||(cbxSpa.isSelected() && p.getAmenities().contains("Spa"))
-                                    ||(cbxHighFloor.isSelected() && p.getAmenities().contains("High Floor"))
+                                ||(cbxHighFloor.isSelected() && p.getAmenities().contains("High Floor"))
                                         ||(cbxPets.isSelected() && p.getAmenities().contains("Pets Allowed")))) {
                            lm.addElement(p.toString());
                            displayedProps.add(p); 
@@ -430,12 +432,13 @@ public class CreateReservation extends javax.swing.JFrame {
                 LocalDate checkIn = LocalDate.parse(tbxCheckIn.getText());
                 LocalDate checkOut = LocalDate.parse(tbxCheckOut.getText());
                 
-                propTracker = properties.get(displayedProps.size() - 1);
+                propTracker = displayedProps.get(listProperties.getSelectedIndex());
                
                 resTracker = new Reservation(checkIn, checkOut, propTracker, custTracker);    //Creates new reservation with tracked customer and property data
                 reservations.add(resTracker);
                 String confirmation = "Reservation Confirmed. Reservation No. " + resTracker.getReservationID();
                 JOptionPane.showMessageDialog(this, confirmation, "Reservation Confirmed", JOptionPane.INFORMATION_MESSAGE);
+                resTracker.Persist();
                 lm.removeElementAt(listProperties.getSelectedIndex());
                 panelPropertySearch.setEnabled(false);
                 btnSearchProperties.setEnabled(false);
@@ -448,16 +451,17 @@ public class CreateReservation extends javax.swing.JFrame {
 
         //used to instantiate all customers, properties, and an exisitng reservation as a test case
         //will update to import properties, maybe customer data via file i/o
-        p1 = new Home("1", 2, 12, 300, "555 Main St", "32060", "Miami", "FL", "Description", "King", "No amenities", 420.69);
-        c1 = new Customer("1", "Ryan", "Merritt", "123 SW 1st St", "ryan@gmail.com", "555-555-5555");
-        Property p2 = new Hotel("2", 2, 13, 350, "1406 Ave", "32608", "Miami", "FL", "Desc goes here", "Queen", "Issa hotel", 987.32);
-        customers.add(c1);
-        properties.add(p1);
-        properties.add(p2);
-        Customer c2 = new Customer("2", "Becky", "Messcher", "456 Main St", "becky@gmail.com", "229-563-2019");
-        customers.add(c2);
-        Reservation r1 = new Reservation(LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-06"), p2, c2);
-        reservations.add(r1);
+        //p1 = new Home("1", 2, 12, 300, "555 Main St", "32060", "Miami", "FL", "Description", "King", "No amenities", 420.69);
+        //c1 = new Customer("1", "Ryan", "Merritt", "123 SW 1st St", "ryan@gmail.com", "555-555-5555");
+        //Property p2 = new Hotel("2", 2, 13, 350, "1406 Ave", "32608", "Miami", "FL", "Desc goes here", "Queen", "Issa hotel", 987.32);
+        //customers.add(c1);
+        //properties.add(p1);
+        //properties.add(p2);
+        //Customer c2 = new Customer("2", "Becky", "Messcher", "456 Main St", "becky@gmail.com", "229-563-2019");
+        //customers.add(c2);
+        //Reservation r1 = new Reservation(LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-06"), p2, c2);
+        //reservations.add(r1);
+        
         
         tbxFirstName.setEditable(false);
         tbxLastName.setEditable(false);

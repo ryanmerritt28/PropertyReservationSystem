@@ -13,7 +13,7 @@ import java.time.*;
 import java.util.Scanner;
 import util.IPersistable;
 
-public class Property {//implements Serializable, IPersistable {
+public class Property implements Serializable, IPersistable {
     
     //attributes
     private String propertyID;
@@ -164,11 +164,58 @@ public class Property {//implements Serializable, IPersistable {
 //        }
 //        return props;
 //    }
-//    
-//    @Override
-//    public void writeToDB(String dbname) {}
-//    
-//    @Override
-//    public void writeToFile(){}
-//    
+    @Override
+    public int Persist() {
+        return 1;
+    }
+    
+    public static List<Property> getProperties()  {
+        Scanner s = null;
+        Property p = null;
+        List<Property> properties = null;
+        
+        String file = String.format("%s%s", IPersistable.path, fileName);
+        
+        try {
+            s = new Scanner(new FileInputStream(file));
+            while (s.hasNext()) {
+                String[] vals = s.nextLine().split(",");
+                int length = vals.length;
+                if (vals[length -1].equals(String.valueOf(2))) {
+                    if (properties == null) {
+                        properties = new ArrayList<>();
+                    }
+                    p = new Condo(vals[0],Integer.parseInt(vals[1]),Integer.parseInt(vals[2]),Integer.parseInt(vals[3]),Integer.parseInt(vals[4]),vals[5],vals[6],vals[7],vals[8],vals[9],vals[10],vals[11],Double.parseDouble(vals[12]));
+                    properties.add(p);
+                }
+                else if (vals[length-1].equals(String.valueOf(3))) {
+                    if (properties == null) {
+                        properties = new ArrayList<>();
+                    }
+                    p = new Home(vals[0],Integer.parseInt(vals[1]),Integer.parseInt(vals[2]),Integer.parseInt(vals[3]),vals[4],vals[5],vals[6],vals[7],vals[8],vals[9],vals[10],Double.parseDouble(vals[11]));
+                    properties.add(p);
+                }
+                else if (vals[length-1].equals(String.valueOf(4))){
+                    if (properties == null) {
+                        properties = new ArrayList<>();
+                    }
+                    p = new Hotel(vals[0],Integer.parseInt(vals[1]),Integer.parseInt(vals[2]),Integer.parseInt(vals[3]),vals[4],vals[5],vals[6],vals[7],vals[8],vals[9],vals[10],Double.parseDouble(vals[11]));
+                    properties.add(p);
+                }
+            }
+             
+        }
+        catch (FileNotFoundException fnfe) {
+            fnfe.printStackTrace();
+        }
+        finally {
+            if (s != null) {
+                s.close();
+            }
+        }
+        return properties;
+    }
+  
+    
+    
 }

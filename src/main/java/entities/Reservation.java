@@ -1,10 +1,15 @@
 package entities;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import util.IPersistable;
 
-public class Reservation {
+public class Reservation implements Serializable, IPersistable {
     
     //attributes
     private int reservationID;
@@ -84,6 +89,29 @@ public class Reservation {
 //        p.addPropReservation(reservation);
 //        Reservation.allReservations.add(reservation);
 //    }
+    @Override
+    public String toString() {
+        return String.format("Check-in: %s\t Check-out: %s\t Property Info: %s\t Customer Info: %s", checkIn, checkOut, property.toString(), customer.toString());
+    }
+
+    @Override
+    public int Persist() {
+        PrintWriter fout = null;
+        String fileName = String.format("%s%s", IPersistable.path, "Reservations.csv");
+        try {
+            fout = new PrintWriter(new FileOutputStream(fileName));
+            fout.println(toString());
+        }
+        catch (FileNotFoundException fnfe) {
+            fnfe.printStackTrace();
+        }
+        finally {
+            if (fout != null) {
+                fout.close();
+            }
+        }
+        return 1;
+    }
 }
     
     
