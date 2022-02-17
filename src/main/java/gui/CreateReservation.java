@@ -14,9 +14,12 @@ import java.util.List;
 import entities.CustomerNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JDialog;
+import java.awt.Component;
+import java.awt.Dialog.ModalityType;
+import javax.swing.GroupLayout;
 
-
-public class CreateReservation extends javax.swing.JFrame {
+public class CreateReservation extends javax.swing.JFrame  {
 
     DefaultListModel lm;
     private Property p1;
@@ -328,6 +331,11 @@ public class CreateReservation extends javax.swing.JFrame {
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Reservation Summary"));
 
         btnReservationSummary.setText("View Reservation Summary");
+        btnReservationSummary.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReservationSummaryActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -565,9 +573,17 @@ public class CreateReservation extends javax.swing.JFrame {
 
     private void btnCreateCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateCustomerActionPerformed
        
-        
-// TODO add your handling code here:
+        CreateCustomer cc = new CreateCustomer(this, true);
+        cc.setVisible(true);
+
     }//GEN-LAST:event_btnCreateCustomerActionPerformed
+
+    private void btnReservationSummaryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReservationSummaryActionPerformed
+        
+        ReservationSummary rs = new ReservationSummary(this, true);
+        rs.setVisible(true);
+        
+    }//GEN-LAST:event_btnReservationSummaryActionPerformed
 
     /**
      * @param args the command line arguments

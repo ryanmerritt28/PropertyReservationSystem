@@ -26,6 +26,7 @@ public class Reservation implements Serializable, IPersistable {
     private static ArrayList<Reservation> allReservations = new ArrayList<>();
     //private static int count = 1;
     private static final String fileName = "Reservations.bin";
+    private static final long serialVersionUID = 971890462562358956L;
     
     //constructors
     public Reservation () {}

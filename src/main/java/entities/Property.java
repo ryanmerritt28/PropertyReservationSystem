@@ -33,6 +33,7 @@ public class Property implements Serializable, IPersistable {
     private List<Reservation> propReservations;
     //private static int count = 1;
     private static final String fileName = "Properties.csv";
+    private static final long serialVersionUID = 2760193673477602867L;
 
     //constructors
     public Property () {}

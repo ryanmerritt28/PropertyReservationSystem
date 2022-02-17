@@ -23,6 +23,7 @@ public class Customer implements Serializable, IPersistable {
     private String customerID;
     private ArrayList<Reservation> custReservations;
     private static final String fileName = "Customers.csv";
+    private static final long serialVersionUID = 757185235801968347L;
     
     //constructors
     public Customer () {}
@@ -69,6 +70,28 @@ public class Customer implements Serializable, IPersistable {
     public void setCustomerID(String customerID) {
         this.customerID = customerID;
     }
+
+    public void setFname(String fname) {
+        this.fname = fname;
+    }
+
+    public void setLname(String lname) {
+        this.lname = lname;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+    
+    
     
     
     
