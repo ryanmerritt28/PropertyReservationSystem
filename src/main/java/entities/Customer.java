@@ -1,9 +1,11 @@
 package entities;
 
-import java.awt.List;
+import java.util.List;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -103,6 +105,45 @@ public class Customer implements Serializable, IPersistable {
             }
         }
         return c;
+    }
+    
+    public List<Reservation> getCustReservations (String cid) {
+        List<Reservation> res = null;
+        ObjectInputStream ois = null;
+        try {
+            String fn = "\\Data\\Reservations.bin";
+            FileInputStream fis = new FileInputStream(fn);
+            ois = new ObjectInputStream(fis);
+            boolean hasnext = (fis.available() != 0);
+
+            while (hasnext) {
+
+                Reservation r = (Reservation) ois.readObject();
+                if (r != null) {
+                    if (res == null) {
+                        res = new ArrayList<>();
+                    }
+                    if (cid.equals(r.getCustomer().getCustomerID())){
+                        res.add(r);
+                    }
+                }
+                hasnext = (fis.available() != 0);
+            }
+        } catch (FileNotFoundException fnfe) {
+            String msg = fnfe.getMessage();
+            System.out.println("Warrning: " + msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ois != null) {
+                    ois.close();
+                }
+            } catch (IOException ios) {
+                ios.printStackTrace();
+            }
+        }
+        return res;
     }
     
     @Override

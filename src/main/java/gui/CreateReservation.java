@@ -74,6 +74,8 @@ public class CreateReservation extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         listProperties = new javax.swing.JList<>();
         btnReserve = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        btnCreateCustomer = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -159,11 +161,6 @@ public class CreateReservation extends javax.swing.JFrame {
         cbxSpa.setText("Spa");
 
         cbxPool.setText("Pool");
-        cbxPool.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbxPoolActionPerformed(evt);
-            }
-        });
 
         cbxHighFloor.setText("High Floor");
 
@@ -298,6 +295,32 @@ public class CreateReservation extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Can't find your customer?"));
+
+        btnCreateCustomer.setText("Create New Customer");
+        btnCreateCustomer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCreateCustomerActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(24, 24, 24)
+                .addComponent(btnCreateCustomer)
+                .addContainerGap(24, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addComponent(btnCreateCustomer)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -306,18 +329,23 @@ public class CreateReservation extends javax.swing.JFrame {
                 .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelReservation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(panelCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(panelPropertySearch, javax.swing.GroupLayout.PREFERRED_SIZE, 951, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(panelPropertySearch, javax.swing.GroupLayout.PREFERRED_SIZE, 951, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(panelCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(82, 82, 82)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(116, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addComponent(panelCustomer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(75, 75, 75)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(panelCustomer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(105, 105, 105)
                 .addComponent(panelPropertySearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 75, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
                 .addComponent(panelReservation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(60, 60, 60))
         );
@@ -329,8 +357,7 @@ public class CreateReservation extends javax.swing.JFrame {
         
         
         String idSearch = tbxCustomerID.getText();
-        
-        
+
         try {
             //Iterates through all customers, searching based off of customerID
             custTracker = Customer.getCustomer(idSearch);
@@ -353,8 +380,6 @@ public class CreateReservation extends javax.swing.JFrame {
                     tbxCheckIn.setEditable(true);
                     tbxCity.setEditable(true);
                 }
-                
-                
             }
  
         catch (CustomerNotFoundException ex) {
@@ -463,11 +488,9 @@ public class CreateReservation extends javax.swing.JFrame {
                 
                 propTracker = displayedProps.get(listProperties.getSelectedIndex());
                
-                resTracker = new Reservation(checkIn, checkOut, propTracker, custTracker);    //Creates new reservation with tracked customer and property data
-                reservations.add(resTracker);
-//                custTracker.addCustReservation(resTracker);
-//                propTracker.addPropReservation(resTracker);
-//                Reservation.addReservation(resTracker);
+                resTracker = new Reservation(checkIn, checkOut, propTracker, custTracker); //Creates new reservation with tracked customer and property data
+                resTracker.setReservationID(resTracker.Persist());
+                Reservation.getReservations().add(resTracker);
                 String confirmation = "Reservation Confirmed. Reservation No. " + resTracker.getReservationID();
                 JOptionPane.showMessageDialog(this, confirmation, "Reservation Confirmed", JOptionPane.INFORMATION_MESSAGE);
                 resTracker.Persist();
@@ -494,7 +517,10 @@ public class CreateReservation extends javax.swing.JFrame {
         //Reservation r1 = new Reservation(LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-06"), p2, c2);
         //reservations.add(r1);
         
-        
+        int numRes = Reservation.getReservations().size();
+        for (int i = 0; i < numRes; i++) {
+            reservations.add(Reservation.getReservations().get(i));
+        }
         tbxFirstName.setEditable(false);
         tbxLastName.setEditable(false);
         tbxPhoneNumber.setEditable(false);
@@ -508,9 +534,11 @@ public class CreateReservation extends javax.swing.JFrame {
         
     }//GEN-LAST:event_formWindowOpened
 
-    private void cbxPoolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbxPoolActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cbxPoolActionPerformed
+    private void btnCreateCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateCustomerActionPerformed
+       
+        
+// TODO add your handling code here:
+    }//GEN-LAST:event_btnCreateCustomerActionPerformed
 
     /**
      * @param args the command line arguments
@@ -549,6 +577,7 @@ public class CreateReservation extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCreateCustomer;
     private javax.swing.JButton btnReserve;
     private javax.swing.JButton btnSearchCustomer;
     private javax.swing.JButton btnSearchProperties;
@@ -565,6 +594,7 @@ public class CreateReservation extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JList<String> listProperties;
     private javax.swing.JPanel panelAmenities;

@@ -122,50 +122,12 @@ public class Property implements Serializable, IPersistable {
     }
     
     public boolean checkAvailability(LocalDate in, LocalDate out) {
-        for (Reservation r : propReservations) {
+        for (Reservation r : Property.getPropReservations(propertyID)) {
                 return !(in.isBefore(r.getCheckOut()) && out.isAfter(r.getCheckIn()));
             }
         return true;
     }
     
-//    public static List<Property> getProperties() {
-//        List<Property> props = null;
-//        ObjectInputStream ois = null;
-//        try {
-//            String file = String.format("%s%s", IPersistable.path, fileName);
-//            FileInputStream fis = new FileInputStream(file);
-//            ois = new ObjectInputStream(fis);
-//            boolean hasNext = (fis.available() != 0);
-//            
-//            while (hasNext) {
-//                Property prop = (Property) ois.readObject();
-//                if (prop != null) {
-//                    if (props == null) {
-//                        props = new ArrayList<>();
-//                    }
-//                    props.add(prop);
-//                }
-//                hasNext = (fis.available() != 0);
-//            }
-//        }
-//        catch (FileNotFoundException fnfe) {
-//                fnfe.printStackTrace();
-//                }
-//        catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        finally {
-//            try {
-//                if (ois != null) {
-//                    ois.close();
-//                }
-//            }
-//            catch (IOException ioe) {
-//                ioe.printStackTrace();
-//            }
-//        }
-//        return props;
-//    }
     @Override
     public int Persist() {
         return 1;
@@ -216,6 +178,45 @@ public class Property implements Serializable, IPersistable {
             }
         }
         return properties;
+    }
+        
+    public static List<Reservation> getPropReservations(String propertyID) {
+        List<Reservation> propRes = null;
+        ObjectInputStream ois = null;
+        try {
+            String fn = String.format("%s%s", IPersistable.path, "Reservations.bin");
+            FileInputStream fis = new FileInputStream(fn);
+            ois = new ObjectInputStream(fis);
+            boolean hasnext = (fis.available() != 0);
+
+            while (hasnext) {
+
+                Reservation r = (Reservation) ois.readObject();
+                if (r != null) {
+                    if (propRes == null) {
+                        propRes = new ArrayList<>();
+                    }
+                    if (propertyID.equals(r.getProperty().getPropertyID())) {
+                        propRes.add(r);
+                    }
+                }
+                hasnext = (fis.available() != 0);
+            }
+        } catch (FileNotFoundException fnfe) {
+            String msg = fnfe.getMessage();
+            System.out.println("Warrning: " + msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ois != null) {
+                    ois.close();
+                }
+            } catch (IOException ios) {
+                ios.printStackTrace();
+            }
+        }
+        return propRes;
     }
   
    public boolean containsSelectedAmenities(Property p, String toSearch) {

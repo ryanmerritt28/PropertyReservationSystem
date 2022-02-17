@@ -3,6 +3,9 @@ package entities;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -21,8 +24,8 @@ public class Reservation implements Serializable, IPersistable {
     private Property property;
     private Customer customer;
     private static ArrayList<Reservation> allReservations = new ArrayList<>();
-    private static int count = 1;
-    private static final String fileName = "Reservations.csv";
+    //private static int count = 1;
+    private static final String fileName = "Reservations.bin";
     
     //constructors
     public Reservation () {}
@@ -32,7 +35,7 @@ public class Reservation implements Serializable, IPersistable {
         //this.numGuests = numGuests
         this.property = property;
         this.customer = customer;
-        reservationID = count++; 
+        //reservationID = count++; 
         property.addPropReservation((this));
         customer.addCustReservation((this));
         Reservation.addReservation((this));
@@ -74,7 +77,10 @@ public class Reservation implements Serializable, IPersistable {
     public static void setAllReservations(ArrayList<Reservation> allReservations) {
         Reservation.allReservations = allReservations;
     }
-    
+
+    public void setReservationID(int reservationID) {
+        this.reservationID = reservationID;
+    }
     
     //methods
     public void deleteReservation(Reservation resToDelete) {
@@ -85,68 +91,85 @@ public class Reservation implements Serializable, IPersistable {
         allReservations.add(r);
     }
     
-//    public void reserveProperty(Customer c, Property p, LocalDate checkIn, LocalDate checkOut) {
-//        
-//        Reservation reservation = new Reservation(checkIn, checkOut, p, c);
-//        c.addCustReservation(reservation);
-//        p.addPropReservation(reservation);
-//        Reservation.allReservations.add(reservation);
-//    }
     @Override
     public String toString() {
         return String.format("%d,%s,%s,%s,%s", reservationID, checkIn, checkOut, property.toString(), customer.toString());
     }
 
-    @Override
+   @Override
     public int Persist() {
-        PrintWriter fout = null;
-        String fileName = String.format("%s%s", IPersistable.path, "Reservations.csv");
+        List<Reservation> pastReservations = Reservation.getReservations();
+        if (pastReservations != null) {
+            reservationID = pastReservations.get(pastReservations.size() - 1).getReservationID() + 1;
+        } else {
+            reservationID = 1;
+        }
+
+        ObjectOutputStream oos = null;
         try {
-            fout = new PrintWriter(new FileOutputStream(fileName, true));
-            fout.println(toString());
-        }
-        catch (FileNotFoundException fnfe) {
+            String fn = String.format("%s%s", IPersistable.path, fileName);
+            oos = new ObjectOutputStream(new FileOutputStream(fn)); //this clears all existing
+            if (pastReservations != null) {
+                for (Reservation res : pastReservations) {
+                    oos.writeObject(res);
+                }
+            }
+            oos.writeObject(this);
+        } catch (FileNotFoundException fnfe) {
             fnfe.printStackTrace();
-        }
-        finally {
-            if (fout != null) {
-                fout.close();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            if (oos != null) {
+                try {
+                    oos.close();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
             }
         }
-        return 1;
+        return reservationID;
     }
     
-//     public static List<Reservation> getReservations()  {
-//        Scanner s = null;
-//        Reservation r = null;
-//        List<Reservation> reservations = null;
-//        
-//        String file = String.format("%s%s", IPersistable.path, fileName);
-//        
-//        try {
-//            s = new Scanner(new FileInputStream(file));
-//            while (s.hasNext()) {
-//                String[] vals = s.nextLine().split(",");
-//                r = new Reservation(LocalDate.parse(vals[1]), LocalDate.parse(vals[2]), vals[3].getClass(), vals[4].getClass());
-//                
-//                    
-//            
-//                
-//            
-//            }
-//       }
-//             
-//        
-//        catch (FileNotFoundException fnfe) {
-//            fnfe.printStackTrace();
-//        }
-//        finally {
-//            if (s != null) {
-//                s.close();
-//            }
-//        }
-//        return reservations;
-//    }
+    public static List<Reservation> getReservations() {
+
+        List<Reservation> allRes = null;
+        ObjectInputStream ois = null;
+        try {
+            String fn = String.format("%s%s", IPersistable.path, fileName);
+            FileInputStream fis = new FileInputStream(fn);
+            ois = new ObjectInputStream(fis);
+            boolean hasnext = (fis.available() != 0);
+
+            while (hasnext) {
+
+                Reservation r = (Reservation) ois.readObject();
+                if (r != null) {
+                    if (allRes == null) {
+                        allRes = new ArrayList<>();
+                    }
+                    allRes.add(r);
+                }
+                hasnext = (fis.available() != 0);
+            }
+        } catch (FileNotFoundException fnfe) {
+            String msg = fnfe.getMessage();
+            System.out.println("Warrning: " + msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ois != null) {
+                    ois.close();
+                }
+            } catch (IOException ios) {
+                ios.printStackTrace();
+            }
+        }
+        return allRes;
+    }
 }
     
     
