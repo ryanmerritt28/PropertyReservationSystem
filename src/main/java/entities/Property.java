@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.*;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Scanner;
 import util.IPersistable;
 
@@ -216,6 +218,11 @@ public class Property implements Serializable, IPersistable {
         return properties;
     }
   
-    
+   public boolean containsSelectedAmenities(Property p, String toSearch) {
+       List<String> propAmenities = Arrays.asList(p.getAmenities().split(" "));
+       List<String> search = Arrays.asList(toSearch.split(" "));
+       
+       return propAmenities.containsAll(search);
+   }
     
 }

@@ -1,5 +1,6 @@
 package gui;
 
+import entities.Condo;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import entities.Customer;
@@ -387,26 +388,54 @@ public class CreateReservation extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, warn, "Date Error", JOptionPane.ERROR_MESSAGE);
             }
             else if (checkIn.isBefore(checkOut)) {
+                Condo condo = null;
+                Home home = null;
+                Hotel hotel = null;
                 int count = 0;
-                if (cbxPool.isSelected() || cbxSpa.isSelected() || cbxHighFloor.isSelected() || cbxPets.isSelected()) {
-                    count ++;
+                String amenities = "";
+                if (cbxPool.isSelected()) {
+                    amenities += "Pool ";
+                    count++;
+                }
+                if (cbxSpa.isSelected()) {
+                    amenities += "Spa ";
+                    count++;
+                }
+                if (cbxHighFloor.isSelected()) {
+                    amenities += "High Floor";
+                    count++;
+                }
+                if (cbxPets.isSelected()) {
+                    amenities += "Pets Allowed";
+                    count++;
                 }
                 for (Property p : properties) {
                     if (p.checkAvailability(checkIn, checkOut) 
                             && p.getCity().equals(tbxCity.getText())) {
-                        if ( count >= 1 && ((cbxPool.isSelected() && p.getAmenities().contains("Pool")) 
-                                ||(cbxSpa.isSelected() && p.getAmenities().contains("Spa"))
-                                ||(cbxHighFloor.isSelected() && p.getAmenities().contains("High Floor"))
-                                        ||(cbxPets.isSelected() && p.getAmenities().contains("Pets Allowed")))) {
-                           lm.addElement(p.toString());
-                           displayedProps.add(p); 
+                        if (count == 0) {
+                            if (comboPropertyType.getSelectedIndex() == 1 && p instanceof Condo) {
+                                lm.addElement(p.toString());
+                                displayedProps.add(p);
+                                }
+                                else if (comboPropertyType.getSelectedIndex() == 2 && p instanceof Home) {
+                                lm.addElement(p.toString());
+                                displayedProps.add(p);
+                                }
+                                else if (comboPropertyType.getSelectedIndex() == 3 && p instanceof Hotel) {
+                                lm.addElement(p.toString());
+                                displayedProps.add(p);
+                                }
+                                else if (comboPropertyType.getSelectedIndex() == 0) {
+                                lm.addElement(p.toString());
+                                displayedProps.add(p);      
+                                }
                         }
-                        else if (count == 0) {
-                            lm.addElement(p.toString());
-                            displayedProps.add(p);
+                        else if ( count > 0 && p.containsSelectedAmenities(p, amenities)) {
+                                lm.addElement(p);
+                                displayedProps.add(p);
+                        } 
                         }
-                   }
-               } 
+                }
                 listProperties.setModel(lm);
             }
         }       
@@ -436,6 +465,9 @@ public class CreateReservation extends javax.swing.JFrame {
                
                 resTracker = new Reservation(checkIn, checkOut, propTracker, custTracker);    //Creates new reservation with tracked customer and property data
                 reservations.add(resTracker);
+//                custTracker.addCustReservation(resTracker);
+//                propTracker.addPropReservation(resTracker);
+//                Reservation.addReservation(resTracker);
                 String confirmation = "Reservation Confirmed. Reservation No. " + resTracker.getReservationID();
                 JOptionPane.showMessageDialog(this, confirmation, "Reservation Confirmed", JOptionPane.INFORMATION_MESSAGE);
                 resTracker.Persist();

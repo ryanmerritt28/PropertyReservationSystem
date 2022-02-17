@@ -1,5 +1,6 @@
 package entities;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
@@ -7,6 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import util.IPersistable;
 
 public class Reservation implements Serializable, IPersistable {
@@ -20,6 +22,7 @@ public class Reservation implements Serializable, IPersistable {
     private Customer customer;
     private static ArrayList<Reservation> allReservations = new ArrayList<>();
     private static int count = 1;
+    private static final String fileName = "Reservations.csv";
     
     //constructors
     public Reservation () {}
@@ -91,7 +94,7 @@ public class Reservation implements Serializable, IPersistable {
 //    }
     @Override
     public String toString() {
-        return String.format("Check-in: %s\t Check-out: %s\t Property Info: %s\t Customer Info: %s", checkIn, checkOut, property.toString(), customer.toString());
+        return String.format("%d,%s,%s,%s,%s", reservationID, checkIn, checkOut, property.toString(), customer.toString());
     }
 
     @Override
@@ -99,7 +102,7 @@ public class Reservation implements Serializable, IPersistable {
         PrintWriter fout = null;
         String fileName = String.format("%s%s", IPersistable.path, "Reservations.csv");
         try {
-            fout = new PrintWriter(new FileOutputStream(fileName));
+            fout = new PrintWriter(new FileOutputStream(fileName, true));
             fout.println(toString());
         }
         catch (FileNotFoundException fnfe) {
@@ -112,6 +115,38 @@ public class Reservation implements Serializable, IPersistable {
         }
         return 1;
     }
+    
+//     public static List<Reservation> getReservations()  {
+//        Scanner s = null;
+//        Reservation r = null;
+//        List<Reservation> reservations = null;
+//        
+//        String file = String.format("%s%s", IPersistable.path, fileName);
+//        
+//        try {
+//            s = new Scanner(new FileInputStream(file));
+//            while (s.hasNext()) {
+//                String[] vals = s.nextLine().split(",");
+//                r = new Reservation(LocalDate.parse(vals[1]), LocalDate.parse(vals[2]), vals[3].getClass(), vals[4].getClass());
+//                
+//                    
+//            
+//                
+//            
+//            }
+//       }
+//             
+//        
+//        catch (FileNotFoundException fnfe) {
+//            fnfe.printStackTrace();
+//        }
+//        finally {
+//            if (s != null) {
+//                s.close();
+//            }
+//        }
+//        return reservations;
+//    }
 }
     
     
