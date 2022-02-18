@@ -6,6 +6,7 @@ package gui;
 
 import entities.Property;
 import entities.Reservation;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
@@ -20,6 +21,7 @@ public class ReservationSummary extends javax.swing.JDialog {
      * Creates new form ReservationSummary
      */
     DefaultListModel lm;
+    List<Reservation> propReservations = null;
     
     
     public ReservationSummary(java.awt.Frame parent, boolean modal) {
@@ -123,8 +125,19 @@ public class ReservationSummary extends javax.swing.JDialog {
         // TODO add your handling code here:
         lm.clear();
         int index = jComboBox1.getSelectedIndex();
-
-        lm.addElement(Property.getPropReservations(String.valueOf(index + 1)));  
+        LocalDate date1 = LocalDate.parse(tbxDate1.getText());
+        LocalDate date2 = LocalDate.parse(tbxDate2.getText());
+        
+        propReservations = Property.getPropReservations(String.valueOf(index + 1));
+        
+        
+        for (Reservation r : propReservations) {
+            if (r.getCheckIn().isBefore(date1) || (r.getCheckOut().isAfter(date2))) {
+                propReservations.remove(r);
+                continue;
+            }
+            lm.addElement(r.toString());
+        }
         
         jList1.setModel(lm);
         
