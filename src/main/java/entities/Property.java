@@ -98,17 +98,13 @@ public class Property implements Serializable, IPersistable {
         return pricePerDay;
     }
 
-    //public boolean isAvailable() {
-    //    return available;
-    //}
-
-    public List<Reservation> getReservations() {
+    public List<Reservation> getPropReservations() {
         return propReservations;
     }
 
-    //public void setAvailable(boolean available) {
-     //   this.available = available;
-    //}
+    public void setPropReservations(List<Reservation> propReservations) {
+        this.propReservations = propReservations;
+    }
 
     //methods
     @Override
@@ -122,11 +118,17 @@ public class Property implements Serializable, IPersistable {
         propReservations.add(r);  
     }
     
-    public boolean checkAvailability(LocalDate in, LocalDate out) {
-        for (Reservation r : Property.getPropReservations(propertyID)) {
-                return !(in.isBefore(r.getCheckOut()) && out.isAfter(r.getCheckIn()));
+    public boolean checkAvailability(LocalDate in, LocalDate out, String propID) {
+        boolean rval = true;
+        for (Reservation r : this.propReservations) {    
+            if(in.isBefore(r.getCheckOut()) && out.isAfter(r.getCheckIn())) {
+                rval = false;
+                break;
             }
-        return true;
+            else
+                rval=true;
+            } 
+        return rval;
     }
     
     @Override
@@ -168,7 +170,6 @@ public class Property implements Serializable, IPersistable {
                     properties.add(p);
                 }
             }
-             
         }
         catch (FileNotFoundException fnfe) {
             fnfe.printStackTrace();
@@ -180,7 +181,7 @@ public class Property implements Serializable, IPersistable {
         }
         return properties;
     }
-        
+    
     public static List<Reservation> getPropReservations(String propertyID) {
         List<Reservation> propRes = null;
         ObjectInputStream ois = null;

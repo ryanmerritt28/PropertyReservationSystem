@@ -22,8 +22,6 @@ import javax.swing.GroupLayout;
 public class CreateReservation extends javax.swing.JFrame  {
 
     DefaultListModel lm;
-    private Property p1;
-    private Customer c1;
     private List<Customer> customers = new ArrayList<>();
     private Customer custTracker;
     private List<Property> properties = Property.getProperties();
@@ -472,8 +470,8 @@ public class CreateReservation extends javax.swing.JFrame  {
                     count++;
                 }
                 for (Property p : properties) {
-                    if (p.checkAvailability(checkIn, checkOut) 
-                            && p.getCity().equals(tbxCity.getText())) {
+                    if (p.getCity().equals(tbxCity.getText()) 
+                            && p.checkAvailability(checkIn, checkOut, p.getPropertyID())) {
                         if (count == 0) {
                             if (comboPropertyType.getSelectedIndex() == 1 && p instanceof Condo) {
                                 lm.addElement(p.toString());
@@ -510,6 +508,11 @@ public class CreateReservation extends javax.swing.JFrame  {
 
     private void btnReserveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReserveActionPerformed
         
+        int numRes = Reservation.getReservations().size();
+        for (int i = 0; i < numRes; i++) {
+            reservations.add(Reservation.getReservations().get(i));
+        }
+        
         if (listProperties.getSelectedIndex() <= -1) {    //Nothing selected from list
             String error = "Please select a property to reserve.";
             JOptionPane.showMessageDialog(this, error, "Reservation Failed", JOptionPane.ERROR_MESSAGE);
@@ -528,9 +531,10 @@ public class CreateReservation extends javax.swing.JFrame  {
                 resTracker = new Reservation(checkIn, checkOut, propTracker, custTracker); //Creates new reservation with tracked customer and property data
                 resTracker.setReservationID(resTracker.Persist());
                 Reservation.getReservations().add(resTracker);
+                propTracker.addPropReservation(resTracker);
+                custTracker.addCustReservation(resTracker);
                 String confirmation = "Reservation Confirmed. Reservation No. " + resTracker.getReservationID();
                 JOptionPane.showMessageDialog(this, confirmation, "Reservation Confirmed", JOptionPane.INFORMATION_MESSAGE);
-                //resTracker.Persist();
                 lm.removeElementAt(listProperties.getSelectedIndex());
                 panelPropertySearch.setEnabled(false);
                 btnSearchProperties.setEnabled(false);
@@ -554,9 +558,8 @@ public class CreateReservation extends javax.swing.JFrame  {
         //Reservation r1 = new Reservation(LocalDate.parse("2020-01-01"), LocalDate.parse("2020-01-06"), p2, c2);
         //reservations.add(r1);
         
-        int numRes = Reservation.getReservations().size();
-        for (int i = 0; i < numRes; i++) {
-            reservations.add(Reservation.getReservations().get(i));
+        for (Property p : properties) {
+            p.setPropReservations(Property.getPropReservations(p.getPropertyID()));
         }
         tbxFirstName.setEditable(false);
         tbxLastName.setEditable(false);

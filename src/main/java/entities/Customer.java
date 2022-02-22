@@ -171,7 +171,7 @@ public class Customer implements Serializable, IPersistable {
     
     @Override
     public String toString() {
-        return String.format("%s %s %s %s %s %s", customerID, fname, lname, address, email, phone);
+        return String.format("%s,%s,%s,%s,%s,%s", customerID, fname, lname, address, email, phone);
     }
   
     @Override
@@ -180,6 +180,7 @@ public class Customer implements Serializable, IPersistable {
         String fileName = String.format("%s%s", IPersistable.path, "Customers.csv");
         try {
             fout = new PrintWriter(new FileOutputStream(fileName, true));
+            fout.println(toString());
         }
         catch (FileNotFoundException fnfe) {
             fnfe.printStackTrace();
@@ -191,7 +192,5 @@ public class Customer implements Serializable, IPersistable {
         }
         return 1;
     }
-    
-    
-    
+
 }

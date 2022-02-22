@@ -23,7 +23,8 @@ public class ReservationSummary extends javax.swing.JDialog {
      * Creates new form ReservationSummary
      */
     DefaultListModel lm;
-    List<Reservation> propReservations = null;
+    List<Reservation> allPropReservations = null;
+    List<Property> properties = Property.getProperties();
     
     
     public ReservationSummary(java.awt.Frame parent, boolean modal) {
@@ -145,10 +146,14 @@ public class ReservationSummary extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void searchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButtonActionPerformed
-        // TODO add your handling code here:
+        
+         for (Property p : properties) {
+            p.setPropReservations(Property.getPropReservations(p.getPropertyID()));
+        }
         lm.clear();
         int index = jComboBox1.getSelectedIndex();
         boolean dateFormatValid = false;
+        
         
         try{
             LocalDate.parse(tbxDate1.getText());
@@ -168,29 +173,24 @@ public class ReservationSummary extends javax.swing.JDialog {
             long totalResDays = 0;
             long thisResDays = 0;
         
-             propReservations = Property.getPropReservations(String.valueOf(index + 1));
-        
-            for (Reservation r : propReservations) {
-                if (r.getCheckIn().isBefore(date1) || (r.getCheckOut().isAfter(date2))) {
-                propReservations.remove(r);
-                continue;
+            allPropReservations = Property.getPropReservations(String.valueOf(index + 1));
+            for (int i = 0; i<allPropReservations.size(); i++) {
+                if (allPropReservations.get(i).getCheckIn().isBefore(date1) || allPropReservations.get(i).getCheckOut().isAfter(date2)){
+                    allPropReservations.remove(i);
                 }
-                lm.addElement(r.toString());
-                thisResDays = r.getCheckIn().until(r.getCheckOut(), ChronoUnit.DAYS);
-                totalResDays += thisResDays;
-                revenue = thisResDays * r.getProperty().getPricePerDay();
-                totalRevenue += revenue;
-                
-            }
-        
+                else {
+                    lm.addElement(allPropReservations.get(i).toString());
+                    thisResDays = allPropReservations.get(i).getCheckIn().until(allPropReservations.get(i).getCheckOut(), ChronoUnit.DAYS);
+                    totalResDays += thisResDays;
+                    revenue = thisResDays * allPropReservations.get(i).getProperty().getPricePerDay();
+                    totalRevenue += revenue;
+                }
+            }          
             jList1.setModel(lm);
+            String totRev = String.valueOf(String.format("%.2f", totalRevenue));
             tbxResDays.setText(String.valueOf(totalResDays));
-            tbxRevenue.setText(String.valueOf(totalRevenue));
-            
-            
-            
+            tbxRevenue.setText(String.valueOf(totRev));   
         }
-        
     }//GEN-LAST:event_searchButtonActionPerformed
 
     /**

@@ -20,7 +20,6 @@ public class Reservation implements Serializable, IPersistable {
     private int reservationID;
     private LocalDate checkIn;
     private LocalDate checkOut;
-    private int numGuests;
     private Property property;
     private Customer customer;
     private static ArrayList<Reservation> allReservations = new ArrayList<>();
@@ -37,8 +36,8 @@ public class Reservation implements Serializable, IPersistable {
         this.property = property;
         this.customer = customer;
         //reservationID = count++; 
-        property.addPropReservation((this));
-        customer.addCustReservation((this));
+        //property.addPropReservation((this));
+        //customer.addCustReservation((this));
 
     } 
     
@@ -53,10 +52,6 @@ public class Reservation implements Serializable, IPersistable {
 
     public LocalDate getCheckOut() {
         return checkOut;
-    }
-
-    public int getNumGuests() {
-        return numGuests;
     }
 
     public Property getProperty() {
