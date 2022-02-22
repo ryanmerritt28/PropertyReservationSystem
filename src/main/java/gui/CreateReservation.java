@@ -530,7 +530,7 @@ public class CreateReservation extends javax.swing.JFrame  {
                 Reservation.getReservations().add(resTracker);
                 String confirmation = "Reservation Confirmed. Reservation No. " + resTracker.getReservationID();
                 JOptionPane.showMessageDialog(this, confirmation, "Reservation Confirmed", JOptionPane.INFORMATION_MESSAGE);
-                resTracker.Persist();
+                //resTracker.Persist();
                 lm.removeElementAt(listProperties.getSelectedIndex());
                 panelPropertySearch.setEnabled(false);
                 btnSearchProperties.setEnabled(false);

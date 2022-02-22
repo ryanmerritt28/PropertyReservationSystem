@@ -7,9 +7,11 @@ package gui;
 import entities.Property;
 import entities.Reservation;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -50,6 +52,10 @@ public class ReservationSummary extends javax.swing.JDialog {
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList<>();
         searchButton = new javax.swing.JButton();
+        tbxRevenue = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        tbxResDays = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -71,6 +77,10 @@ public class ReservationSummary extends javax.swing.JDialog {
             }
         });
 
+        jLabel4.setText("Total Revenue: $");
+
+        jLabel5.setText("Number of Days Reserved: ");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -84,19 +94,27 @@ public class ReservationSummary extends javax.swing.JDialog {
                                 .addComponent(jLabel1)
                                 .addGap(30, 30, 30)
                                 .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 676, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tbxDate1, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(tbxDate1, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel3)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tbxDate2, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(tbxDate2, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(29, 29, 29)
+                                .addComponent(searchButton))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(193, 193, 193)
-                        .addComponent(searchButton)))
-                .addContainerGap(88, Short.MAX_VALUE))
+                        .addGap(77, 77, 77)
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tbxRevenue, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(111, 111, 111)
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tbxResDays, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(58, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -110,12 +128,17 @@ public class ReservationSummary extends javax.swing.JDialog {
                     .addComponent(jLabel2)
                     .addComponent(tbxDate1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
+                    .addComponent(searchButton)
                     .addComponent(tbxDate2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(40, 40, 40)
-                .addComponent(searchButton)
-                .addContainerGap(52, Short.MAX_VALUE))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(69, 69, 69)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tbxRevenue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5)
+                    .addComponent(tbxResDays, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(90, Short.MAX_VALUE))
         );
 
         pack();
@@ -125,21 +148,48 @@ public class ReservationSummary extends javax.swing.JDialog {
         // TODO add your handling code here:
         lm.clear();
         int index = jComboBox1.getSelectedIndex();
-        LocalDate date1 = LocalDate.parse(tbxDate1.getText());
-        LocalDate date2 = LocalDate.parse(tbxDate2.getText());
+        boolean dateFormatValid = false;
         
-        propReservations = Property.getPropReservations(String.valueOf(index + 1));
-        
-        
-        for (Reservation r : propReservations) {
-            if (r.getCheckIn().isBefore(date1) || (r.getCheckOut().isAfter(date2))) {
-                propReservations.remove(r);
-                continue;
-            }
-            lm.addElement(r.toString());
+        try{
+            LocalDate.parse(tbxDate1.getText());
+            LocalDate.parse(tbxDate2.getText());
+            dateFormatValid = true;
+        }
+        catch (Exception e) {
+            String warn = "Please enter dates in YYYY-MM-DD format.";
+            JOptionPane.showMessageDialog(this, warn, "Date Format Error", JOptionPane.ERROR_MESSAGE);
         }
         
-        jList1.setModel(lm);
+        if (dateFormatValid) {
+            LocalDate date1 = LocalDate.parse(tbxDate1.getText());
+            LocalDate date2 = LocalDate.parse(tbxDate2.getText());
+            double revenue;
+            double totalRevenue = 0;
+            long totalResDays = 0;
+            long thisResDays = 0;
+        
+             propReservations = Property.getPropReservations(String.valueOf(index + 1));
+        
+            for (Reservation r : propReservations) {
+                if (r.getCheckIn().isBefore(date1) || (r.getCheckOut().isAfter(date2))) {
+                propReservations.remove(r);
+                continue;
+                }
+                lm.addElement(r.toString());
+                thisResDays = r.getCheckIn().until(r.getCheckOut(), ChronoUnit.DAYS);
+                totalResDays += thisResDays;
+                revenue = thisResDays * r.getProperty().getPricePerDay();
+                totalRevenue += revenue;
+                
+            }
+        
+            jList1.setModel(lm);
+            tbxResDays.setText(String.valueOf(totalResDays));
+            tbxRevenue.setText(String.valueOf(totalRevenue));
+            
+            
+            
+        }
         
     }//GEN-LAST:event_searchButtonActionPerformed
 
@@ -190,10 +240,14 @@ public class ReservationSummary extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JList<String> jList1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton searchButton;
     private javax.swing.JTextField tbxDate1;
     private javax.swing.JTextField tbxDate2;
+    private javax.swing.JTextField tbxResDays;
+    private javax.swing.JTextField tbxRevenue;
     // End of variables declaration//GEN-END:variables
 }

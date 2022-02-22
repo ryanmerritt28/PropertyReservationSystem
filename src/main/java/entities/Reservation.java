@@ -39,7 +39,7 @@ public class Reservation implements Serializable, IPersistable {
         //reservationID = count++; 
         property.addPropReservation((this));
         customer.addCustReservation((this));
-        Reservation.addReservation((this));
+
     } 
     
 //getters and setters
@@ -94,7 +94,7 @@ public class Reservation implements Serializable, IPersistable {
     
     @Override
     public String toString() {
-        return String.format("%d,%s,%s,%s,%s", reservationID, checkIn, checkOut, property.toString(), customer.toString());
+        return String.format("Reservation ID: %d   CheckIn: %s   CheckOut: %s", reservationID, checkIn, checkOut);
     }
 
    @Override
@@ -109,7 +109,7 @@ public class Reservation implements Serializable, IPersistable {
         ObjectOutputStream oos = null;
         try {
             String fn = String.format("%s%s", IPersistable.path, fileName);
-            oos = new ObjectOutputStream(new FileOutputStream(fn)); //this clears all existing
+            oos = new ObjectOutputStream(new FileOutputStream(fn)); //clears all existing reservations
             if (pastReservations != null) {
                 for (Reservation res : pastReservations) {
                     oos.writeObject(res);

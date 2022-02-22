@@ -113,7 +113,7 @@ public class Property implements Serializable, IPersistable {
     //methods
     @Override
     public String toString() {
-        String rv = String.format("%s. %s", propertyID, streetAddress);
+        String rv = String.format("%s. %s, Amenities: %s", propertyID, streetAddress, amenities);
         
         return rv;
     }
